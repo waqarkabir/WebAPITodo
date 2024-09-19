@@ -1,5 +1,6 @@
 
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Rewrite;
 
 namespace WebAPI
 {
@@ -13,6 +14,9 @@ namespace WebAPI
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
+
+            //URL Redirection
+            app.UseRewriter(new Microsoft.AspNetCore.Rewrite.RewriteOptions().AddRedirect("tasks/(.*)", "todos/$1"));
             // Enable Swagger UI only in development environment
             app.UseSwagger();
             app.UseSwaggerUI(c =>

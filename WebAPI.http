@@ -1,6 +1,31 @@
-@WebAPI_HostAddress = http://localhost:5030
+@WebAPI_HostAddress = https://localhost:7189
 
-GET {{WebAPI_HostAddress}}/weatherforecast/
+### 
+GET {{WebAPI_HostAddress}}/todos
+Accept: application/json
+
+###
+
+### 
+POST {{WebAPI_HostAddress}}/todos
+Content-Type: application/json
+
+{
+  "id": 2,
+  "name": "2nd item",
+  "dueDate": "2024-10-19T09:25:09.303Z",
+  "isCompleted": false
+}
+###
+
+### 
+GET {{WebAPI_HostAddress}}/tasks/2
+Accept: application/json
+
+###
+
+### 
+DELETE {{WebAPI_HostAddress}}/todos/2
 Accept: application/json
 
 ###
