@@ -17,6 +17,15 @@ namespace WebAPI
 
             //URL Redirection
             app.UseRewriter(new Microsoft.AspNetCore.Rewrite.RewriteOptions().AddRedirect("tasks/(.*)", "todos/$1"));
+
+            //Custom Middleware for Logging
+            app.Use(async (context, next) => 
+            {
+                System.Console.WriteLine($"[{context.Request.Method} {context.Request.Path} {DateTime.UtcNow}] Started");
+                await next(context);
+                System.Console.WriteLine($"[{context.Request.Method} {context.Request.Path} {DateTime.UtcNow}] Finished");
+            });
+
             // Enable Swagger UI only in development environment
             app.UseSwagger();
             app.UseSwaggerUI(c =>
