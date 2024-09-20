@@ -1,4 +1,5 @@
 
+using System.ComponentModel.Design;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Rewrite;
 
@@ -67,13 +68,19 @@ namespace WebAPI
                     errors.Add(nameof(Todo.IsCompleted) , ["Cannot add completed todo."]);
                 }
 
-                foreach (var todo in todos)
-                {
-                    if (taskArgument.Id == todo.Id)
+                //Inefficient for finding id
+                //foreach (var todo in todos)
+                //{
+                    // if (taskArgument.Id == todo.Id)
+                    // {
+                    //     errors.Add(nameof(Todo.Id) , [$"Todo task with id: {todo.Id} already exists."]);
+                    // }
+                //}
+                var foundDuplicateId = todos.Find(x => x.Id == taskArgument.Id);
+                    if (foundDuplicateId is not null)
                     {
-                        errors.Add(nameof(Todo.Id) , [$"Todo task with id: {todo.Id} already exists."]);
+                        errors.Add(nameof(Todo.Id) , [$"Todo task with id: {taskArgument.Id} already exists."]);
                     }
-                }
 
                 if (errors.Count > 0)
                 {

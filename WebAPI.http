@@ -11,9 +11,9 @@ POST {{WebAPI_HostAddress}}/todos
 Content-Type: application/json
 
 {
-  "id": 2,
-  "name": "2nd item",
-  "dueDate": "2022-10-19T09:25:09.303Z",
+  "id": 1,
+  "name": "1st item",
+  "dueDate": "2024-10-19T09:25:09.303Z",
   "isCompleted": false
 }
 ###
