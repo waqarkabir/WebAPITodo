@@ -67,6 +67,14 @@ namespace WebAPI
                     errors.Add(nameof(Todo.IsCompleted) , ["Cannot add completed todo."]);
                 }
 
+                foreach (var todo in todos)
+                {
+                    if (taskArgument.Id == todo.Id)
+                    {
+                        errors.Add(nameof(Todo.Id) , [$"Todo task with id: {todo.Id} already exists."]);
+                    }
+                }
+
                 if (errors.Count > 0)
                 {
                     return Results.ValidationProblem(errors);                    
