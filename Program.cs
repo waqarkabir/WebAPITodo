@@ -2,6 +2,7 @@
 using System.ComponentModel.Design;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Rewrite;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace WebAPI
 {
@@ -13,7 +14,8 @@ namespace WebAPI
             // Add Swagger services
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
+            // builder.Services.AddSingleton<ITaskService, InMemoryTaskService>();
+            builder.Services.AddSingleton<ITaskService>(new InMemoryTaskService());
             var app = builder.Build();
 
             //URL Redirection
@@ -40,19 +42,19 @@ namespace WebAPI
 
             var todos = new List<Todo>();
 
-            app.MapGet("/todos", () => todos);
+            app.MapGet("/todos", (ITaskService service) => service.GetTodos());
 
-            app.MapGet("todos/{id}", Results<Ok<Todo>, NotFound> (int id) =>
+            app.MapGet("todos/{id}", Results<Ok<Todo>, NotFound> (int id, ITaskService service) =>
             {
-                var targetTodo = todos.SingleOrDefault(x => x.Id == id);
+                var targetTodo = service.GetTodoById(id);
                 return targetTodo is null
                     ? TypedResults.NotFound()
                     : TypedResults.Ok(targetTodo);
             });
 
-            app.MapPost("/todos", (Todo task) =>
+            app.MapPost("/todos", (Todo task, ITaskService service) =>
             {
-                todos.Add(task);
+                service.AddToDo(task);
                 return TypedResults.Created("/todos/{id}", task);
             })
             .AddEndpointFilter(async (context, next) =>
@@ -90,9 +92,9 @@ namespace WebAPI
                 return await next(context);
             });
 
-            app.MapDelete("/todos/{id}", (int id) =>
+            app.MapDelete("/todos/{id}", (int id, ITaskService service) =>
             {
-                todos.RemoveAll(t => id == t.Id);
+                service.DeleteTodoById(id);
 
                 return TypedResults.NoContent();
             });
@@ -102,4 +104,36 @@ namespace WebAPI
     }
 
     public record Todo(int Id, string Name, DateTime DueDate, bool IsCompleted);
+
+    interface ITaskService
+    {
+        Todo? GetTodoById(int id);
+        List<Todo> GetTodos();
+        void DeleteTodoById(int id);
+        Todo AddToDo(Todo task);
+    }
+
+    class InMemoryTaskService : ITaskService
+    {
+        private readonly List<Todo> _todos = [];
+        
+        public Todo? GetTodoById(int id)
+        {
+             return _todos.SingleOrDefault(x => x.Id == id);
+        }
+
+        public List<Todo> GetTodos()
+        {
+            return _todos;
+        }
+        public void DeleteTodoById(int id)
+        {
+            _todos.RemoveAll(task => id == task.Id);
+        }
+        public Todo AddToDo(Todo task)
+        {
+            _todos.Add(task);
+            return task;
+        }
+    }
 }

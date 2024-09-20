@@ -11,15 +11,15 @@ POST {{WebAPI_HostAddress}}/todos
 Content-Type: application/json
 
 {
-  "id": 1,
+  "id": 2,
   "name": "1st item",
   "dueDate": "2024-10-19T09:25:09.303Z",
-  "isCompleted": false
+  "isCompleted": true
 }
 ###
 
 ### 
-GET {{WebAPI_HostAddress}}/tasks/2
+GET {{WebAPI_HostAddress}}/tasks/1
 Accept: application/json
 
 ###
